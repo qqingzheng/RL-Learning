@@ -6,6 +6,7 @@ Model-Free即不理解环境的学习，在真实环境中学习。**在强化�
 + Q-Learning
 + Sarsa
 + Policy Gradients
++ 
 Model-Based即先建立虚拟环境（模型）模拟真实环境。Model-Based具有想象力，可以根据反馈预知接下来发生的所有情况，并根据预测来采取下一步的策略。
 + Q-Learning
 + Sarsa

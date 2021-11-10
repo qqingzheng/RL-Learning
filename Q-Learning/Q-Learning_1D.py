@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 import time
-
-from pandas.core.frame import DataFrame
 """
 本例子来自于莫烦
 https://mofanpy.com/

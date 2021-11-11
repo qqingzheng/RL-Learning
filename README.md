@@ -10,11 +10,15 @@
 -----------------
 ## 方法展示
 **Sarsa**:
-
-<img src="images/Sarsa01.png">
-<img src="images/Sarsa02.png">
+<table><tr>
+<td><img src="images/Sarsa01.png" style="zoom:50%"></td>
+<td><img src="images/Sarsa02.png" style="zoom:50%"></td>
+</tr></table>
 
 **Q-Learning**:
 
-![QLearning01](images/Q-Learning01.png)
-![QLearning02](images/Q-Learning02.png)
+<table><tr>
+<td><img src="images/Q-Learning01.png" style="zoom:50%"></td>
+<td><img src="images/Q-Learning02.png" style="zoom:50%"></td>
+</tr></table>
+

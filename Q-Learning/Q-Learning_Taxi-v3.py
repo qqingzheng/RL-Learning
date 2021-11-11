@@ -3,7 +3,7 @@ import gym
 import numpy as np
 import Core.Module as m
 import time
-EPISODE = 8000
+EPISODE = 50000
 env = gym.make("Taxi-v3").unwrapped
 action_list = tuple(range(env.action_space.n))
 qmodule = m.Q_Learning(action_list=action_list,lr=1e-2,epsilon_decay=2000,epsilon_end=0.2)
@@ -38,6 +38,8 @@ for episode in range(EPISODE):
     if episode % 100 == 0:
         vt.update(episode_log)
         vt1.update(reward_log[0], reward_log[1], reward_log[2])
+vt.update(True,episode_log)
+vt1.update(True,reward_log[0], reward_log[1], reward_log[2])
 print("\n Done!")
 def test_module():
     total_reward = 0
@@ -57,5 +59,3 @@ def test_module():
 print("Testing")
 test_module()
 qmodule.save_table()
-vt.savefig()
-vt1.savefig()

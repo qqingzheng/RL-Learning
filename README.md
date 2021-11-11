@@ -12,15 +12,15 @@
 训练环境: Gym Taxi-v3
 <table><tr>
 <td><img src="images/Taxi-v3.png"></td>
-<td><img src="images/Sarsa Suc.png" style="zoom:50%"></td>
-<td><img src="images/Sarsa Training.png" style="zoom:50%"></td>
+<td><img src="Sarsa/Sarsa Suc.png" style="zoom:50%"></td>
+<td><img src="Sarsa/Sarsa Training.png" style="zoom:50%"></td>
 </tr></table>
 
 #### Q-Learning
 训练环境: Gym Taxi-v3
 <table><tr>
 <td><img src="images/Taxi-v3.png"></td>
-<td><img src="images/Q-Learning Suc.png" style="zoom:50%"></td>
-<td><img src="images/Q-Learning Training.png" style="zoom:50%"></td>
+<td><img src="Q-Learning/Q-Learning Suc.png" style="zoom:50%"></td>
+<td><img src="Q-Learning/Q-Learning Training.png" style="zoom:50%"></td>
 </tr></table>
 

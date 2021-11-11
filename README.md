@@ -10,8 +10,9 @@
 -----------------
 ## 方法展示
 **Sarsa**:
-![Sarsa01](images/Sarsa01.png)
-![Sarsa02](images/Sarsa02.png)
+
+<img src="images/Sarsa01.png">
+<img src="images/Sarsa02.png">
 
 **Q-Learning**:
 

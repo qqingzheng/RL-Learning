@@ -27,3 +27,6 @@ class ViewTrend(Plt):
         if self.is_ipython:
             display.clear_output(wait=True)
             display.display(plt.gcf())
+
+    def savefig(self):
+        plt.savefig(self.title)

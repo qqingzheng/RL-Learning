@@ -35,7 +35,8 @@ class Sarsa(RL_Module):
         if not state in self.q_table.index:
             self.q_table = self.q_table.append(
                 pd.Series([0] * len(self.action_list), index=self.q_table.columns, name=state))
-
+    def save_table(self):
+        self.q_table.to_csv("sarsa_table.csv")
     def action_fn(self, state):
         return self.q_table.loc[state, :].argmax()
 
@@ -71,6 +72,8 @@ class Q_Learning(RL_Module):
     def add_state(self,state):
         if not state in self.q_table.index:
             self.q_table = self.q_table.append(pd.Series([0]*len(self.action_list),index=self.q_table.columns,name=state))
+    def save_table(self):
+        self.q_table.to_csv("q_learning_table.csv")
     def action_fn(self,state):
         return self.q_table.loc[state,:].argmax()
     def learn(self,state,action,reward,next_state,is_done=False):
@@ -102,8 +105,3 @@ class Q_Learning(RL_Module):
             now = q_target_value
             q_target_value += self.lr*(pred-now)
         self.q_table.loc[state, action] = q_target_value
-class Q_Learning(RL_Module):
-    def __init__(self,action_list,lr=1e-2,gamma=0.99,epsilon_start=0.9,epsilon_end=0.1,epsilon_decay=200):
-        super(Q_Learning,self).__init__(action_list,lr=lr,epsilon_start=epsilon_start,epsilon_end=epsilon_end,epsilon_decay=epsilon_decay)
-        self.q_table = pd.DataFrame(columns=self.action_list,dtype=np.float64)
-        self.gamma = gamma

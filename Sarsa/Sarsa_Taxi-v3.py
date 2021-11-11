@@ -3,7 +3,7 @@ import gym
 import numpy as np
 import Core.Module as m
 import time
-EPISODE = 50000
+EPISODE = 8000
 env = gym.make("Taxi-v3").unwrapped
 action_list = tuple(range(env.action_space.n))
 smodule = m.Sarsa(action_list=action_list,lr=1e-2,epsilon_decay=2000,epsilon_end=0.2)
@@ -35,7 +35,7 @@ for episode in range(EPISODE):
     reward_log[0].append(train_reward_log[0])
     reward_log[1].append(train_reward_log[1])
     reward_log[2].append(train_reward_log[2])
-    if episode % 10 == 0:
+    if episode % 100 == 0:
         vt.update(episode_log)
         vt1.update(reward_log[0], reward_log[1], reward_log[2])
 
@@ -58,3 +58,4 @@ def test_module():
     print(f"\nTesting reward average: {total_reward/100}")
 print("Testing")
 test_module()
+smodule.save_table()

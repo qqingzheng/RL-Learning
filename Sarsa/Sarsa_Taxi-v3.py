@@ -13,6 +13,7 @@ vt1 = mp.ViewTrend(1,"Sarsa Suc","EPISODE","REWARD")
 episode_log = []
 reward_log = [[],[],[]]
 train_reward_log = [0,0,0]
+env.render()
 for episode in range(EPISODE):
     observation = env.reset()
     episode_reward = 0
@@ -58,4 +59,6 @@ def test_module():
     print(f"\nTesting reward average: {total_reward/100}")
 print("Testing")
 test_module()
+vt.savefig()
+vt1.savefig()
 smodule.save_table()

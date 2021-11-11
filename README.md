@@ -1,24 +1,26 @@
 # RL-Learning
 
-学习强化学习的笔记
+学习强化学习的笔记 
 
-----------
 ## 已实现的方法
 + DQN
 + Sarsa
 + Q-Learning
------------------
 ## 方法展示
-**Sarsa**:
+#### Sarsa
+
+训练环境: Gym Taxi-v3
 <table><tr>
-<td><img src="images/Sarsa01.png" style="zoom:50%"></td>
-<td><img src="images/Sarsa02.png" style="zoom:50%"></td>
+<td><img src="images/Taxi-v3.png"></td>
+<td><img src="images/Sarsa Suc.png" style="zoom:50%"></td>
+<td><img src="images/Sarsa Training.png" style="zoom:50%"></td>
 </tr></table>
 
-**Q-Learning**:
-
+#### Q-Learning
+训练环境: Gym Taxi-v3
 <table><tr>
-<td><img src="images/Q-Learning01.png" style="zoom:50%"></td>
-<td><img src="images/Q-Learning02.png" style="zoom:50%"></td>
+<td><img src="images/Taxi-v3.png"></td>
+<td><img src="images/Q-Learning Suc.png" style="zoom:50%"></td>
+<td><img src="images/Q-Learning Training.png" style="zoom:50%"></td>
 </tr></table>
 

@@ -39,7 +39,6 @@ class Sarsa(RL_Module):
         self.q_table.to_csv("sarsa_table.csv")
     def action_fn(self, state):
         return self.q_table.loc[state, :].argmax()
-
     def learn(self, state, action, reward, next_state, next_action, is_done=False):
         f"""
         Parameters:

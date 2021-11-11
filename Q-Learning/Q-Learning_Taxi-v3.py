@@ -55,7 +55,7 @@ def test_module():
                 break
         total_reward += episode_reward
         print(f"\r Testing({episode}): {episode_reward}", end="")
-    print(f"\nTesting reward average: {total_reward/100}")
+    print(f"\nTesting reward average: {total_reward/500}")
 print("Testing")
 test_module()
 qmodule.save_table()

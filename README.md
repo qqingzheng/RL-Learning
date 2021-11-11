@@ -16,6 +16,11 @@
 <td><img src="Sarsa/Sarsa Training.png" style="zoom:50%"></td>
 </tr></table>
 
+```
+Testing reward average: 8.05
+```
+
+
 #### Q-Learning
 训练环境: Gym Taxi-v3
 <table><tr>
@@ -24,3 +29,6 @@
 <td><img src="Q-Learning/Q-Learning Training.png" style="zoom:50%"></td>
 </tr></table>
 
+```
+Testing reward average: 7.98
+```

@@ -15,6 +15,7 @@ class ViewTrend(Plt):
         self.is_ipython = 'inline' in matplotlib.get_backend()
         self.x_label = x_label
         self.y_label = y_label
+        self.save = False
     def savefig(self,*arg):
         self.save = True
         self.update(*arg)

@@ -10,7 +10,7 @@ qmodule = m.Q_Learning(action_list=action_list,lr=1e-2,epsilon_decay=2000,epsilo
 print("Training")
 vt = mp.ViewTrend(2,"Q-Learning Training","EPISODE","REWARD")
 vt1 = mp.ViewTrend(1,"Q-Learning Suc","EPISODE","REWARD")
-episode_log = [[]]
+episode_log = []
 reward_log = [[],[],[]]
 train_reward_log = [0,0,0]
 for episode in range(EPISODE):

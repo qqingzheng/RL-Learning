@@ -8,7 +8,7 @@ smodule = m.Sarsa(action_list=action_list,lr=1e-2,epsilon_decay=2000,epsilon_end
 print("Training")
 vt = mp.ViewTrend(2,"Sarsa Training","EPISODE","REWARD")
 vt1 = mp.ViewTrend(1,"Sarsa Suc","EPISODE","REWARD")
-episode_log = [[]]
+episode_log = []
 reward_log = [[],[],[]]
 train_reward_log = [0,0,0]
 for episode in range(EPISODE):
@@ -36,9 +36,9 @@ for episode in range(EPISODE):
     print(f"\r Training({episode}): {episode_reward}", end="")
     if episode % 100 == 0:
         vt.update(episode_log)
-        vt1.update(reward_log)
-vt.update(episode_log, True)
-vt1.update(reward_log, True)
+        vt1.update(reward_log[0], reward_log[1], reward_log[2])
+vt.savefig(episode_log)
+vt1.savefig(reward_log[0], reward_log[1], reward_log[2])
 print("\n Done!")
 def test_module():
     total_reward = 0

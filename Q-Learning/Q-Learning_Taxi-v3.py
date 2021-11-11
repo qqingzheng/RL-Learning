@@ -1,6 +1,8 @@
 import Core.Mpl as mp
 import gym
+import numpy as np
 import Core.Module as m
+import time
 EPISODE = 50000
 env = gym.make("Taxi-v3").unwrapped
 action_list = tuple(range(env.action_space.n))
@@ -35,9 +37,9 @@ for episode in range(EPISODE):
     print(f"\r Training({episode}): {episode_reward}",end="")
     if episode % 100 == 0:
         vt.update(episode_log)
-        vt1.update(reward_log)
-vt.update(episode_log,True)
-vt1.update(reward_log,True)
+        vt1.update(reward_log[0], reward_log[1], reward_log[2])
+vt.savefig(episode_log)
+vt1.savefig(reward_log[0], reward_log[1], reward_log[2])
 print("\n Done!")
 def test_module():
     total_reward = 0

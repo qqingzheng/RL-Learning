@@ -15,13 +15,13 @@ class ViewTrend(Plt):
         self.is_ipython = 'inline' in matplotlib.get_backend()
         self.x_label = x_label
         self.y_label = y_label
-    def update(self,savefig=False,*arg):
+    def update(self,list,savefig=False):
         plt.figure(self.id)
         plt.clf()
         plt.title(self.title)
         plt.xlabel(self.x_label)
         plt.ylabel(self.y_label)
-        for y in arg:
+        for y in list:
             plt.plot(y)
         plt.pause(1)
         if self.is_ipython:

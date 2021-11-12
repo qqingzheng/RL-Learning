@@ -5,8 +5,9 @@ from torch import nn
 import torch.optim
 from Core import Utils,DModule,Mpl
 def get_screen() -> torch.Tensor:
-    screen = np.pad(env.render(mode='rgb_array').transpose((2, 0, 1)),((0,0),(0,0),(200,200)),mode='edge')
-    cart_position = (2.4 + env.state[0])*(1000/4.8)
+    extend = 400
+    screen = np.pad(env.render(mode='rgb_array').transpose((2, 0, 1)),((0,0),(0,0),(extend,extend)),mode='edge')
+    cart_position = (2.4 + env.state[0])*((600+extend*2)/4.8)
     screen = screen[:,120:400,int((cart_position-300)):int((cart_position+300))]
     screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
     screen = torch.from_numpy(screen)
@@ -35,7 +36,7 @@ class NN(nn.Module):
     def forward(self,x):
         x = self.layers.forward(x)
         return self.leaner1.forward(x)
-EPISODE = 300
+EPISODE = 200
 TEST_EPISODE = 20
 device = "cpu" if not torch.cuda.is_available() else "cuda"
 env = gym.make("CartPole-v0").unwrapped
@@ -76,6 +77,7 @@ for episode in range(EPISODE):
     eposide_step.append(step_times)
     if episode % 10 == 0:
         vt.update(eposide_step)
+print("done!")
 vt.savefig(eposide_step)
 fixed_nn.eval()
 torch.save(fixed_nn, 'model_structure.pth')

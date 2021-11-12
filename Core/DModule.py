@@ -69,12 +69,11 @@ class DQN(RL_DModule):
         experience = self.Experience(state,action,reward,next_state)
         self.memory.append(experience)
 class Basic_Policy_Gradient(RL_DModule):
-    def __init__(self,network,device,optim_fn,action_list,lr=1e-1,gamma=0.95):
+    def __init__(self,network,device,optim_fn,action_list,lr=1e-2,gamma=0.95):
         super(Basic_Policy_Gradient, self).__init__(action_list)
         self.device = device
         self.network = network
         self.ep_action,self.ep_reward,self.ep_state = [],[],[]
-        self.memory = list()
         self.gamma = gamma
         self.optim_fn = optim_fn
         self.last_reward = 0
@@ -93,21 +92,19 @@ class Basic_Policy_Gradient(RL_DModule):
             temp = temp*self.gamma+reward_batch[i]
             returns[i] = temp
         pred_state_action = self.network(state_batch)
-        returns = torch.tensor(returns - returns.mean() / (returns.std() + 1e-9), device=self.device,requires_grad=False)
+        returns = torch.tensor((returns - returns.mean())/(returns.std() + 1e-5), device=self.device,requires_grad=False)
         returns = returns.reshape(pred_state_action.shape[0],1)
         self.optim_fn.zero_grad()
         action_mask = torch.zeros_like(pred_state_action,requires_grad=False)
         for i in range(len(ep_action)):
             action_mask[i,ep_action[i]] = 1
-        loss = (-torch.log(pred_state_action)*returns*action_mask).sum()
+        loss = -(torch.log(pred_state_action)*returns*action_mask).sum()/pred_state_action.shape[0]
+        print(loss)
         loss.backward()
         self.optim_fn.step()
         self.ep_action, self.ep_reward, self.ep_state = [], [], []
     def choose_action(self,state):
         with torch.no_grad():
             pred_action = self.network(state).detach()
-            if torch.isnan(pred_action)[0,0]:
-                pred_action = [0.5,0.5]
-            else:
-                pred_action = pred_action.squeeze().numpy()
+            pred_action = pred_action.squeeze().numpy()
             return np.random.choice(self.action_list,p=pred_action)

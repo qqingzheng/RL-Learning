@@ -34,10 +34,10 @@ Temporal-Difference update是单步更新制。
 
 ## On-Policy 与 Off-Policy
 
-On-Policy为在线学习，必须本人在场帮助计算机学习。
+On-Policy为在线学习，训练的Actor与探索环境的Actor不同。
 + Sarsa
 
-Off-Policy离线学习，不需要本人在场。
+Off-Policy离线学习，训练的Actor与探索环境的Actor相同。
 + Q-Learning
 + Deep-Q-Network
 

@@ -30,13 +30,17 @@ class NN(nn.Module):
         )
         window = self.conv_workpace(*self.conv_workpace(*self.conv_workpace(screen_width,screen_height,5,2),5,2),5,2)
         window_size = window[0]*window[1]
-        self.leaner = torch.nn.Linear(32*window_size,action_num)
+        self.leaner1 = torch.nn.Linear(32*window_size,32)
+        self.leaner2 = torch.nn.Linear(32, 16)
+        self.leaner3 = torch.nn.Linear(16, 4)
+        self.leaner4 = torch.nn.Linear(4, 2)
     def conv_workpace(self,weight,height,kernel_size,stride):
         return (weight - kernel_size)//stride + 1,(height - kernel_size)//stride + 1
     def forward(self,x):
         x = self.layers.forward(x)
-        return self.leaner.forward(x)
+        return self.leaner4.forward(self.leaner3.forward(self.leaner2.forward(self.leaner1.forward(x))))
 EPISODE = 1000
+TEST_EPISODE = 20
 device = "cpu" if not torch.cuda.is_available() else "cuda"
 env = gym.make("CartPole-v0").unwrapped
 env.reset()
@@ -47,20 +51,22 @@ fixed_nn.load_state_dict(nn.state_dict())
 
 criterion = torch.nn.SmoothL1Loss()
 optim = torch.optim.RMSprop(nn.parameters())
-dqn = DModule.DQN(nn,fixed_nn,device,optim,criterion,list(range(env.action_space.n)))
+dqn = DModule.DQN(nn,fixed_nn,device,optim,criterion,list(range(env.action_space.n)),epsilon_end=0.3)
 vt = Mpl.ViewTrend(0,"Training","EPISODE","STEP_TIMES")
+vt1 = Mpl.ViewTrend(1,"Testing","EPISODE","STEP_TIMES")
 eposide_step = []
+test_eposide_step = []
 for episode in range(EPISODE):
     env.reset()
     observation = get_screen()
     next_observation = get_screen()
-    state = next_observation - observation
+    state = observation
     step_times= 0
     while True:
-        action = dqn.choose_action(state)
+        action = dqn.choose_action(state,is_test=False if episode%TEST_EPISODE != 0 else True)
         _,reward,done,_ = env.step(action)
         next_observation = get_screen()
-        next_state = next_observation - observation
+        next_state = next_observation
         dqn.learn(state,action,reward,next_state)
         dqn.optim_network()
         state = next_state
@@ -70,9 +76,14 @@ for episode in range(EPISODE):
             break
         step_times += 1
     eposide_step.append(step_times)
-    if episode % 3 == 0:
+    if (episode % TEST_EPISODE == 0):
+        test_eposide_step.append(step_times)
+        vt1.update(test_eposide_step)
+    if episode % 5 == 0:
         vt.update(eposide_step)
-
-
+vt1.savefig(test_eposide_step)
+vt.savefig(eposide_step)
+torch.save(fixed_nn, 'model_structure.pth')
+torch.save(fixed_nn.state_dict(), 'model_weights.pth')
 
 

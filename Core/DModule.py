@@ -72,3 +72,23 @@ class DQN(RL_DModule):
     def action_fn(self,state):
         with torch.no_grad():
            return self.network(state).argmax().item()
+class Policy_Gradient(RL_DModule):
+    def __init__(self,network,fixed_network,device,optim_fn,loss_fn,action_list,batch_size=128,memory_size=40000,lr=1e-2, gamma=0.99, epsilon_start=0.95, epsilon_end=0.1, epsilon_decay=200, memory_update_step=3):
+        super(Policy_Gradient, self).__init__(action_list, lr=lr, epsilon_start=epsilon_start, epsilon_end=epsilon_end,
+                                         epsilon_decay=epsilon_decay)
+        self.device = device
+        self.network = network
+        self.Memory = namedtuple("Brain",("state","action","reward","next_state"))
+        self.memory = deque([],maxlen=memory_size)
+        self.gamma = gamma
+        self.memory_update_step = memory_update_step
+        self.optim_times = 0
+        self.batch_size = batch_size
+        self.optim_fn = optim_fn
+        self.loss_fn = loss_fn
+    def learn(self,state,action,reward,next_state):
+        experience = self.Container(state,action,reward,next_state)
+        self.memory.append(experience)
+    def action_fn(self,state):
+        with torch.no_grad():
+           return self.network(state).argmax().item()

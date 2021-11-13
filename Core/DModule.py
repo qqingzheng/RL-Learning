@@ -3,6 +3,10 @@ import math
 import random
 from collections import deque,namedtuple
 import numpy as np
+
+"""
+DModule.py
+"""
 class RL_DModule(object):
     def __init__(self, action_list):
         self.step_times = 0

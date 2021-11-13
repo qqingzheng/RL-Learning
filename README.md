@@ -6,29 +6,16 @@
 + DQN
 + Sarsa
 + Q-Learning
++ Actor-Critic
++ DDPG
++ Policy-Gradient
 ## 方法展示
-#### Sarsa
-
-训练环境: Gym Taxi-v3
-<table><tr>
-<td><img src="images/Taxi-v3.png"></td>
-<td><img src="Sarsa/Sarsa Suc.png" style="zoom:50%"></td>
-<td><img src="Sarsa/Sarsa Training.png" style="zoom:50%"></td>
-</tr></table>
-
-```
-Testing reward average: 8.05
-```
-
-
-#### Q-Learning
-训练环境: Gym Taxi-v3
-<table><tr>
-<td><img src="images/Taxi-v3.png"></td>
-<td><img src="Q-Learning/Q-Learning Suc.png" style="zoom:50%"></td>
-<td><img src="Q-Learning/Q-Learning Training.png" style="zoom:50%"></td>
-</tr></table>
-
-```
-Testing reward average: 7.98
-```
+#### Q-Learning & Sarsa
+训练环境: Taxi-v3
+![](images/Q-Learning&Sarsa.png)
+#### DQN
+![](images/DQN.png)
+#### Policy-Gradient
+![](images/Policy-Gradient.png)
+#### DDPG
+![](images/DDPG.png)

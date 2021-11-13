@@ -2,6 +2,9 @@ import torch
 import numpy as np
 import math
 import pandas as pd
+"""
+Module.py
+"""
 class RL_Module(object):
     def __init__(self,action_list,lr=1e-2,epsilon_start=0.9,epsilon_end=0.1,epsilon_decay=200):
         self.lr = lr
@@ -40,17 +43,6 @@ class Sarsa(RL_Module):
     def action_fn(self, state):
         return self.q_table.loc[state, :].argmax()
     def learn(self, state, action, reward, next_state, next_action, is_done=False):
-        f"""
-        Parameters:
-           state: 当前状态
-           action: 当前状态产生的行为
-           reward: 这个行为的得到的奖励
-           next_state: 下一个状态
-           next_action: 下一个状态的动作
-           is_done: 训练是否结束
-        Return:
-           无返回
-           """
         self.add_state(next_state)
         q_target_value = self.q_table.loc[state, action]
         if next_state == 'terminal' or is_done:
@@ -76,22 +68,6 @@ class Q_Learning(RL_Module):
     def action_fn(self,state):
         return self.q_table.loc[state,:].argmax()
     def learn(self,state,action,reward,next_state,is_done=False):
-        f"""
-        Parameters:
-           state: 当前状态
-           action: 当前状态产生的行为
-           reward: 这个行为的得到的奖励
-           next_state: 下一个状态
-           is_done: 训练是否结束
-        Return:
-            无返回
-        Q-Learning算法: 
-        Q(s,a) <- Q(s,a) + a(r+ymax_a'Q(s',a')-Q(s,a))
-        a:学习率
-        y:衰减率
-        
-        
-        """
         self.add_state(next_state)
         q_target_value = self.q_table.loc[state, action]
         if next_state == 'terminal' or is_done:

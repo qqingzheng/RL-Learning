@@ -12,7 +12,9 @@ class RL_DModule(object):
     def learn(self, **args):
         pass
 class DQN(RL_DModule):
-    def __init__(self,network,fixed_network,device,optim_fn,loss_fn,action_list,batch_size=128,memory_size=40000, gamma=0.99, epsilon_start=0.95, epsilon_end=0.1, epsilon_decay=200, memory_update_step=3):
+    def __init__(self,network,fixed_network,device,optim_fn,loss_fn,action_list
+                 ,batch_size=128,memory_size=40000, gamma=0.99
+                 , epsilon_start=0.95, epsilon_end=0.1, epsilon_decay=200):
         super(DQN, self).__init__(action_list)
         self.device = device
         self.network = network
@@ -20,7 +22,6 @@ class DQN(RL_DModule):
         self.Experience = namedtuple("Brain",("state","action","reward","next_state"))
         self.memory = deque([],maxlen=memory_size)
         self.gamma = gamma
-        self.memory_update_step = memory_update_step
         self.optim_times = 0
         self.batch_size = batch_size
         self.optim_fn = optim_fn
@@ -28,6 +29,9 @@ class DQN(RL_DModule):
         self.epsilon_start = epsilon_start
         self.epsilon_end = epsilon_end
         self.epsilon_decay = epsilon_decay
+    def choose_action_val(self,state):
+        with torch.no_grad():
+            return self.network(state).item()
     def choose_action(self, state, is_test=False):
         random_rate = np.random.uniform(0, 1)
         self.threshold = self.epsilon_end + (self.epsilon_start - self.epsilon_end) * math.exp(
@@ -53,18 +57,18 @@ class DQN(RL_DModule):
                                      dtype=torch.bool)
         next_state_batch = torch.cat([s for s in next_state_batch_orgin if s != None])
         pred_state_action = self.network(state_batch).gather(1, action_batch)
-        # pred_state_action shape(batch_size,n_action)
         pred_next_state_action = torch.zeros(state_batch.shape[0])
         with torch.no_grad():
-            pred_next_state_action[not_none_mask] = self.fixed_network(next_state_batch).max(1)[0].detach()
+            pred_next_state_action[not_none_mask] = self.fixed_network(next_state_batch).detach().max(1)[0]
         expected_state_action_values = (pred_next_state_action * self.gamma) + reward_batch
         self.optim_fn.zero_grad()
         loss = self.loss_fn(pred_state_action, expected_state_action_values.unsqueeze(1))
+
         loss.backward()
         self.optim_fn.step()
         self.optim_times += 1
-        if self.optim_times % self.memory_update_step == 0:
-            self.fixed_network.load_state_dict(self.network.state_dict())
+    def update_fixed_network(self):
+        self.fixed_network.load_state_dict(self.network.state_dict())
     def learn(self,state,action,reward,next_state):
         experience = self.Experience(state,action,reward,next_state)
         self.memory.append(experience)
@@ -99,7 +103,6 @@ class Basic_Policy_Gradient(RL_DModule):
         for i in range(len(ep_action)):
             action_mask[i,ep_action[i]] = 1
         loss = -(torch.log(pred_state_action)*returns*action_mask).sum()/pred_state_action.shape[0]
-        print(loss)
         loss.backward()
         self.optim_fn.step()
         self.ep_action, self.ep_reward, self.ep_state = [], [], []
@@ -107,4 +110,66 @@ class Basic_Policy_Gradient(RL_DModule):
         with torch.no_grad():
             pred_action = self.network(state).detach()
             pred_action = pred_action.squeeze().numpy()
+
             return np.random.choice(self.action_list,p=pred_action)
+class Actor_Critic():
+    def __init__(self,actor_network,critic_network,critic_fixed_network,device,actor_optim_fn,critic_optim_fn
+                 ,action_list,actor_lr=1e-3,critic_lr=1e-2,actor_gamma=0.95
+                 ,batch_size=128, memory_size=40000, critic_gamma=0.99,
+                 memory_update_step=3
+                 ):
+        self.device = device
+        self.actor_network = actor_network
+        self.actor_optim_fn = actor_optim_fn
+        self.actor = Basic_Policy_Gradient(actor_network,device,actor_optim_fn,action_list,lr=actor_lr,gamma=actor_gamma)
+        self.critic_network = critic_network
+        self.critic_optim_fn = critic_optim_fn
+        self.critic_fixed_network = critic_fixed_network
+        self.action_list = action_list
+        self.batch_size = batch_size
+        self.critic_gamma = critic_gamma
+        self.Experience = namedtuple("Brain", ("state", "action", "reward", "next_state"))
+        self.memory = deque([], maxlen=memory_size)
+        self.last_reward = 0
+        self.memory_update_step=memory_update_step
+    def get_batch_from_memory(self):
+        return random.sample(self.memory, self.batch_size)
+    def critic_learn(self,state,action,reward,next_state):
+        experience = self.Experience(state, action, reward,next_state)
+        self.memory.append(experience)
+        self.optim_critic()
+    def actor_learn(self,state,action,td_error):
+        self.actor.learn(state,action,td_error)
+    def optim_critic(self):
+        if len(self.memory) < self.batch_size:
+            return
+        zip_memory = zip(*self.get_batch_from_memory())
+        state_batch = torch.cat(next(zip_memory))
+        action_batch = torch.tensor(next(zip_memory))
+        reward_batch = torch.tensor(next(zip_memory))
+        next_state_batch_orgin = next(zip_memory)
+        not_none_mask = torch.tensor(tuple(map(lambda s: s != None, next_state_batch_orgin)), device=self.device,
+                                     dtype=torch.bool)
+        next_state_batch = torch.cat([s for s in next_state_batch_orgin if s != None])
+        td_error_batch = self.critic_network(state_batch)
+        next_td_error_no_mask = self.critic_fixed_network(next_state_batch).detach()
+        next_td_error = torch.zeros(state_batch.shape[0])
+        with torch.no_grad():
+            next_td_error[not_none_mask] = next_td_error_no_mask[:,0]
+        expected = reward_batch + self.critic_gamma*(next_td_error)
+        loss_fn = torch.nn.MSELoss()
+        td_error_batch = td_error_batch.type(torch.float32)
+        expected = expected.type(torch.float32)
+        self.critic_optim_fn.zero_grad()
+        loss = loss_fn(td_error_batch,expected.unsqueeze(1))
+        print(f"\r loss: {loss}", end="")
+        loss.backward()
+        self.critic_optim_fn.step()
+    def optim_actor(self):
+        self.actor.optim_network()
+    def get_error(self,state):
+        return self.critic_network(state)
+    def choose_action(self,state):
+        return self.actor.choose_action(state)
+    def update_critic_fixed_network(self):
+        self.critic_fixed_network.load_state_dict(self.critic_network.state_dict())

@@ -1,3 +1,5 @@
+import time
+
 import Core.Mpl as mp
 import gym
 import Core.Module as m
@@ -17,6 +19,8 @@ for episode in range(EPISODE):
     while True:
         action = smodule.choose_action(observation)
         next_observation, reward, done,_ = env.step(action)
+        env.render()
+        time.sleep(0.3)
         next_action = smodule.choose_action(next_observation)
         episode_reward += reward
         smodule.learn(observation,action,reward,next_observation,next_action,done)
@@ -33,6 +37,7 @@ for episode in range(EPISODE):
     reward_log[0].append(train_reward_log[0])
     reward_log[1].append(train_reward_log[1])
     reward_log[2].append(train_reward_log[2])
+
     print(f"\r Training({episode}): {episode_reward}", end="")
     if episode % 100 == 0:
         vt.update(episode_log)
